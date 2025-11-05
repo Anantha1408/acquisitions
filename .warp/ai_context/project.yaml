@@ -1,0 +1,41 @@
+project_context:
+  name: "Acquisitions Management System"
+  type: "node_express_api"
+  description: "Express.js API for acquisitions management with Neon/PostgreSQL and Drizzle ORM"
+  
+  tech_stack:
+    - "Node.js (ES Modules)"
+    - "Express.js 5.x"
+    - "Drizzle ORM"
+    - "Neon Database (PostgreSQL)"
+    - "JWT Authentication"
+    - "Zod Validation"
+    - "Winston Logging"
+    - "ESLint + Prettier"
+  
+  patterns:
+    - "Path mapping with # imports"
+    - "Controller-Service-Model architecture"
+    - "Middleware-based authentication"
+    - "Structured logging with Winston"
+    - "Environment-based configuration"
+  
+  key_files:
+    - "src/index.js": "Application entry point"
+    - "src/server.js": "Server configuration"
+    - "src/app.js": "Express app setup"
+    - "package.json": "Dependencies and scripts"
+    - "drizzle.config.js": "Database configuration"
+  
+  development_workflow:
+    start: "npm run dev"
+    lint: "npm run lint:fix"
+    format: "npm run format"
+    database: "npm run db:studio"
+    
+  common_commands:
+    - "dev": "Start development server"
+    - "lint:fix": "Fix linting issues"
+    - "format": "Format code with Prettier"
+    - "db:studio": "Open database studio"
+    - "db:generate": "Generate migrations"

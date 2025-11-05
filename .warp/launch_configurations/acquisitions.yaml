@@ -1,0 +1,41 @@
+name: "Acquisitions Development"
+description: "Launch configuration for the acquisitions project"
+
+environment_variables:
+  NODE_ENV: development
+
+aliases:
+  # Development
+  dev: "npm run dev"
+  start: "npm run dev"
+  
+  # Code Quality
+  lint: "npm run lint"
+  fix: "npm run lint:fix && npm run format"
+  format: "npm run format"
+  check: "npm run lint && npm run format:check"
+  
+  # Database
+  db-studio: "npm run db:studio"
+  db-gen: "npm run db:generate"
+  db-migrate: "npm run db:migrate"
+  
+  # Project Navigation
+  goto-config: "cd src/config"
+  goto-controllers: "cd src/controllers"
+  goto-models: "cd src/models"
+  goto-routes: "cd src/routes"
+  goto-services: "cd src/services"
+  goto-utils: "cd src/utils"
+  goto-validations: "cd src/validations"
+  
+  # Logs
+  logs: "tail -f logs/*.log"
+  clear-logs: "rm -rf logs/*.log"
+  
+  # Git shortcuts
+  gs: "git status"
+  ga: "git add ."
+  gc: "git commit -m"
+  gp: "git push"
+  gl: "git log --oneline -10"
