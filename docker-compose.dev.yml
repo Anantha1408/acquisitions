@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Neon Local proxy for development
+  neon-local:
+    image: neondatabase/neon_local:latest
+    container_name: neon-local
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env.development
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # Application service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: acquisitions-dev
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env.development
+    volumes:
+      # Mount source code for hot reloading
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      neon-local:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    stdin_open: true
+    tty:  true
+    healthcheck:
+        test:
+          [
+            'CMD',
+            'node',
+            '-e',
+            "const http = require('http'); const req = http.request({hostname: 'localhost', port: 3000, path: '/health'}, (res) => process.exit(res.statusCode === 200 ? 0 : 1)); req.on('error', () => process.exit(1)); req.end();",
+          ]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
+
+networks:
+  app-network:
+    driver: bridge
