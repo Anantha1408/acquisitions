@@ -1,0 +1,72 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        id: test
+        env:
+          NODE_ENV: test
+          NODE_OPTIONS: --experimental-vm-modules
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          CI: true
+        run: |
+          npm test -- --coverage
+        continue-on-error: true
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            coverage/**
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Summarize test results
+        if: always()
+        env:
+          TEST_OUTCOME: ${{ steps.test.outcome }}
+        run: |
+          echo "## Test results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Outcome: $TEST_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -f coverage/coverage-summary.json ]; then
+            LINE_PCT=$(node -e "try{const s=require('./coverage/coverage-summary.json');process.stdout.write(String(s.total.lines.pct||''))}catch(e){process.exit(0)}" 2>/dev/null || true)
+            if [ -n "$LINE_PCT" ]; then
+              echo "- Line coverage: ${LINE_PCT}%" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "- Coverage report available (see uploaded artifact)." >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            echo "- No coverage report found." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ "$TEST_OUTCOME" != "success" ]; then
+            echo "::error title=Tests failed::One or more tests failed. Review logs and run 'npm test' locally."
+            exit 1
+          fi
