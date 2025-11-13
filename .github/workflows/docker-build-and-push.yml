@@ -20,7 +20,7 @@ jobs:
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
           IMAGE_NAME_LC="$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')"
           echo "IMAGE_NAME_LC=$IMAGE_NAME_LC" >> "$GITHUB_ENV"
-          echo "IMAGE=docker.io/${{ secrets.DOCKER_USERNAME }}/kunbernetes-demo-api >> "$GITHUB_ENV"
+          echo "IMAGE=docker.io/${{ secrets.DOCKER_USERNAME }}/acquisitions-app >> "$GITHUB_ENV"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
