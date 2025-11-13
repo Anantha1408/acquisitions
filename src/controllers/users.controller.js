@@ -31,12 +31,10 @@ export const fetchUserById = async (req, res, next) => {
   try {
     const validation = userIdSchema.safeParse(req.params);
     if (!validation.success) {
-      return res
-        .status(400)
-        .json({
-          error: 'validation failed',
-          details: formatValidationError(validation.error),
-        });
+      return res.status(400).json({
+        error: 'validation failed',
+        details: formatValidationError(validation.error),
+      });
     }
 
     // Require authentication: check JWT cookie
@@ -76,22 +74,18 @@ export const updateUser = async (req, res, next) => {
     // Validate params and body
     const idResult = userIdSchema.safeParse(req.params);
     if (!idResult.success) {
-      return res
-        .status(400)
-        .json({
-          error: 'validation failed',
-          details: formatValidationError(idResult.error),
-        });
+      return res.status(400).json({
+        error: 'validation failed',
+        details: formatValidationError(idResult.error),
+      });
     }
 
     const bodyResult = updateUserSchema.safeParse(req.body);
     if (!bodyResult.success) {
-      return res
-        .status(400)
-        .json({
-          error: 'validation failed',
-          details: formatValidationError(bodyResult.error),
-        });
+      return res.status(400).json({
+        error: 'validation failed',
+        details: formatValidationError(bodyResult.error),
+      });
     }
 
     const { id } = idResult.data;
@@ -137,12 +131,10 @@ export const deleteUser = async (req, res, next) => {
   try {
     const validation = userIdSchema.safeParse(req.params);
     if (!validation.success) {
-      return res
-        .status(400)
-        .json({
-          error: 'validation failed',
-          details: formatValidationError(validation.error),
-        });
+      return res.status(400).json({
+        error: 'validation failed',
+        details: formatValidationError(validation.error),
+      });
     }
     const { id } = validation.data;
 
