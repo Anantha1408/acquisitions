@@ -1,28 +1,187 @@
-# Acquisitions API — Auth Middleware Usage
+# Acquisitions API
 
-This project includes JWT-based authentication and role-based access control for user endpoints.
+A modular, secure REST API for user management with JWT authentication, role-based access control, and PostgreSQL (via Neon + Drizzle ORM). Production-ready Docker setup, structured logging, request validation, and layered architecture.
 
-## Overview
+- Live endpoints (local): `http://localhost:3000/`
+- Health: `GET /health`
+- API root: `GET /api`
 
-- Sign up (`POST /api/auth/sign-up`) and sign in (`POST /api/auth/sign-in`) issue a JWT stored as an HTTP-only cookie named `token`.
-- Middleware:
-  - `authenticateToken`: requires a valid JWT cookie and attaches `req.user` with `{ id, email, role }`.
-  - `requireRole('admin')`: allows access only to users with the `admin` role.
-- Security middleware (Arcjet) is enabled. For local testing you can bypass it with header `x-bypass-arcjet: 1`.
+## Key features
 
-## Protected routes
+- Express 5 (ES modules) with layered architecture (routes → controllers → services → db models)
+- Authentication and RBAC
+  - JWT access token stored in HTTP-only cookie `token`
+  - Route guards: `authenticateToken`, `requireRole('admin')`
+- PostgreSQL with Drizzle ORM and Neon serverless driver
+- Security: Helmet, CORS, Arcjet shield/bot detection/rate limit
+- Validation with Zod
+- Logging with Winston + Morgan
+- Testing with Jest + Supertest
+- Docker and Compose for dev/prod
+- Linting/formatting with ESLint + Prettier
 
-- `GET /api/users` — Admin only (requires `authenticateToken` + `requireRole('admin')`).
-- `GET /api/users/:id` — Any authenticated user.
-- `PUT /api/users/:id` — Any authenticated user; controller restricts updates (self or admin).
-- `DELETE /api/users/:id` — Admin only (requires `authenticateToken` + `requireRole('admin')`).
+## Tech stack
 
-## Quick start
+- Runtime: Node.js 20, Express 5
+- Database: PostgreSQL (Neon serverless), Drizzle ORM
+- Auth: jsonwebtoken, bcrypt, http-only cookies
+- Validation: Zod
+- Security: Helmet, CORS, Arcjet (@arcjet/node)
+- Logging: Winston, Morgan
+- Tooling: ESLint, Prettier, Jest, Supertest
+- Containers: Docker, docker-compose
 
-1. Install dependencies and start the server.
-2. The API listens on `http://localhost:3000` (see `src/server.js`).
+## How it works (architecture)
 
-## Example usage (curl)
+- `src/app.js`: Sets up Express, global middleware (Helmet, CORS, body parsers, cookies, Arcjet, Morgan), and routes
+- `src/server.js`: Boots the HTTP server
+- `src/routes/*`: Route definitions (auth, users)
+- `src/controllers/*`: IO layer: validate input, authZ, shape responses
+- `src/services/*`: Business logic (auth, users), talks to DB
+- `src/models/*`: Drizzle ORM schema (e.g., `users` table)
+- `src/config/*`: DB, logger, Arcjet configuration
+- `src/middleware/*`: Cross-cutting concerns (auth, security)
+- `src/utils/*`: JWT, cookies, formatting helpers
+- `src/validations/*`: Zod schemas
+
+Project structure (high level):
+
+```
+src/
+  app.js
+  server.js
+  index.js
+  config/         # db, logger, arcjet
+  controllers/    # auth, users
+  middleware/     # security, auth
+  models/         # drizzle schema (users)
+  routes/         # /api/auth, /api/users
+  services/       # auth, users
+  utils/          # jwt, cookies
+  validations/    # zod schemas
+Dockerfile
+docker-compose.dev.yml
+docker-compose.prod.yml
+```
+
+## Setup
+
+1) Install dependencies
+
+```
+npm ci
+```
+
+2) Environment variables
+
+Create `.env.development` for local dev and `.env.production` for prod. Example:
+
+```
+# Common
+PORT=3000
+NODE_ENV=development
+LOG_LEVEL=info
+
+# Database
+# For Neon: postgres://user:password@host:port/dbname
+DATABASE_URL=postgres://user:password@localhost:5432/postgres
+
+# Auth
+JWT_SECRET=replace-with-a-strong-random-secret
+
+# Arcjet
+ARCJET_KEY=your-arcjet-key
+```
+
+Notes:
+- `src/config/database.js` enables Neon Local proxy settings when `NODE_ENV=development`.
+- Arcjet is active by default. For local testing, add header `x-bypass-arcjet: 1` if needed.
+
+3) Run (node)
+
+- Development (file watch):
+
+```
+npm run dev
+```
+
+- Production:
+
+```
+npm start
+```
+
+4) Run (Docker)
+
+- Dev:
+
+```
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+- Prod:
+
+```
+docker-compose -f docker-compose.prod.yml up --build
+```
+
+The app exposes `http://localhost:3000` and reports health at `/health`.
+
+## Database
+
+- Drizzle ORM with Neon serverless driver
+- Schema defined in `src/models/user.model.js`
+- Drizzle scripts (if you add `drizzle.config.*`):
+  - `npm run db:generate`
+  - `npm run db:migrate`
+  - `npm run db:studio`
+
+If you intend to manage SQL migrations, add a proper `drizzle.config.ts/js` and point it to your schema directory and migrations folder.
+
+## API reference (summary)
+
+- `GET /health` — health check
+- `GET /api` — API banner
+
+Auth
+- `POST /api/auth/sign-up` — Create user, set `token` cookie
+- `POST /api/auth/sign-in` — Authenticate user, set `token` cookie
+- `POST /api/auth/sign-out` — Clear `token` cookie
+
+Users
+- `GET /api/users` — List all users (admin only)
+- `GET /api/users/:id` — Fetch user by id (authenticated)
+- `PUT /api/users/:id` — Update user (authenticated; only self or admin; only admin may change role)
+- `DELETE /api/users/:id` — Delete user (admin only; controller allows self-delete if desired)
+
+Auth and cookies
+- JWT is issued on sign-up/sign-in and stored as an HTTP-only cookie named `token`
+- Cookie options: `httpOnly`, `sameSite=strict`, `secure` in production
+
+## Security
+
+- Helmet: secure headers
+- CORS: enabled (configure allowed origins for production)
+- Arcjet: shield (common attack patterns), bot detection, and rate limiting
+  - Custom role-based rate limiting is applied in `security.middleware.js` using `req.user?.role` (guest/user/admin)
+- JWT: HS256 token (1d expiry) stored in an HTTP-only cookie
+
+Bypass (local testing only): send header `x-bypass-arcjet: 1` to ease iterative testing.
+
+## Logging
+
+- Winston: writes to `logs/error.log` and `logs/combined.log`; logs to console in non-prod
+- Morgan: HTTP access logs piped into Winston
+
+## Testing
+
+```
+npm test
+```
+
+Uses Jest + Supertest. Add tests under `__tests__` or alongside modules.
+
+## Examples (curl)
 
 Create a regular user and test access denial:
 
@@ -65,7 +224,7 @@ curl -i -b admin_cookies.txt -H 'x-bypass-arcjet: 1' http://localhost:3000/api/u
 curl -i -b admin_cookies.txt -H 'x-bypass-arcjet: 1' -X DELETE http://localhost:3000/api/users/<USER_ID>
 ```
 
-## Example usage (PowerShell)
+## Examples (PowerShell)
 
 ```powershell
 # Regular user
@@ -86,33 +245,47 @@ Invoke-WebRequest -Uri "http://localhost:3000/api/users" -Method GET -Headers @{
 Invoke-WebRequest -Uri "http://localhost:3000/api/users/10" -Method DELETE -Headers @{ 'x-bypass-arcjet'='1' } -WebSession $admin -UseBasicParsing
 ```
 
-## Notes
-
-- The JWT secret is configured in `src/utils/jwt.js` via `JWT_SECRET` env var. Use a strong secret in production.
-- Cookies are HTTP-only and secure in production; for local testing, they’re set without the `secure` flag.
-- The Arcjet security middleware enforces bot/shield/rate limits. Use `x-bypass-arcjet: 1` only for local testing.
-
-## Common error responses
-
-- 401 unauthorized
-  - Missing token cookie, invalid/expired token, or not signed in.
-- 403 forbidden
-  - Authenticated but lacks required role. Examples: non-admin calling `GET /api/users` or `DELETE /api/users/:id`.
-- 400 validation failed
-  - Request body/params do not pass Zod validation.
-- 429 too many requests
-  - Rate limit hit by Arcjet. For local testing, add header `x-bypass-arcjet: 1` to bypass security middleware.
-
 ## Troubleshooting
 
-- After changing middleware/routes, restart the server so changes take effect.
-- Ensure the `token` cookie is present:
-  - curl: use `-c cookies.txt` (save) and `-b cookies.txt` (send) flags.
-  - PowerShell: reuse the same `-WebRequestSession`.
-- If tokens suddenly stop working, confirm `JWT_SECRET` hasn’t changed; existing cookies become invalid if it does.
-- Token seen as missing in dev:
-  - Make sure requests are sent to the same host/port that set the cookie (e.g., `http://localhost:3000`).
-  - Cookies are set `secure` only in production; on HTTP in dev they will be sent.
-- Getting 429 during local tests:
-  - Add `x-bypass-arcjet: 1` header to your requests, or wait for the window to reset.
-- PowerShell tip: `Invoke-WebRequest` throws on non-2xx; wrap calls in `try { ... } catch { $_.Exception.Response.StatusCode.value__ }` to read the status code.
+- Restart the server after changing middleware/routes
+- Ensure the `token` cookie is present
+  - curl: `-c cookies.txt` (save) and `-b cookies.txt` (send)
+  - PowerShell: reuse the same `-WebRequestSession`
+- If tokens stop working, ensure `JWT_SECRET` hasn’t changed
+- For 429 locally, add header `x-bypass-arcjet: 1`
+
+## Improvements and next steps
+
+- Security middleware order
+  - `securityMiddleware` currently runs before auth; it reads `req.user?.role` which may be undefined, so all clients rate-limit as `guest`
+  - Move `authenticateToken` earlier in the chain (or decode the cookie in security middleware) to apply role-based limits accurately
+- Cookie utility bug
+  - `src/utils/cookies.js` imports `express/lib/request` and its `get(res, name)` reads from `req.cookies` but receives `res` — change it to `get(req, name)` and call with the request
+- Environment examples
+  - Add `DATABASE_URL`, `JWT_SECRET`, and `ARCJET_KEY` to `.env.example` (documented above)
+- Validation
+  - `signupSchema.email` should use `z.email()`; consider stronger password policy
+- Logging format
+  - `logger.format.combine((timestamp(), errors(), json()))` uses the comma operator; only `json()` is applied. Use `combine(timestamp(), errors({stack:true}), json())`
+- Data model
+  - `updated_at` is not auto-updated on writes; update it in service layer or via DB trigger/defaults
+  - Add DB indexes/constraints as needed
+- CORS
+  - Restrict origins in production to an allowlist
+- Tokens
+  - JWT expiry is 1d while cookie maxAge is 15m — decide on and align the session policy
+  - Consider refresh tokens and rotation for long-lived sessions
+- Error handling
+  - Add centralized error handler middleware for consistent error responses
+- Documentation
+  - Add OpenAPI/Swagger (e.g., `swagger-ui-express`) and CI checks for lint/test
+- Testing
+  - Increase coverage for services/controllers and auth edge cases
+
+## License
+
+ISC
+
+## Repository
+
+https://github.com/Anantha1408/acquisitions
