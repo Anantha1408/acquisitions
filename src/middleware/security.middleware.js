@@ -7,6 +7,17 @@ import app from "../app.js";
 
 const securityMiddleware=async (req,res,next)=> {
     try {
+        // Dev-only bypass to allow local testing (cookies, auth, etc.)
+        // Bypass if:
+        //  - NODE_ENV !== 'production' AND
+        //  - header 'x-bypass-arcjet: 1' is present OR the path is /health or /api/auth/*
+        if (process.env.NODE_ENV !== 'production') {
+            const bypass = req.get('x-bypass-arcjet') === '1' || req.path === '/health' || req.path.startsWith('/api/auth');
+            if (bypass) {
+                return next();
+            }
+        }
+
         const role = req.user?.role || 'guest';
         let limit;
         let message;
