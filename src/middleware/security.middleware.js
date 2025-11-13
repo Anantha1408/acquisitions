@@ -1,9 +1,7 @@
 import aj from '#config/arcjet.js';
-import res from 'express/lib/response.js';
-import req from 'express/lib/request.js';
 import { slidingWindow } from '@arcjet/node';
 import logger from '#config/logger.js';
-import app from '../app.js';
+
 
 const securityMiddleware = async (req, res, next) => {
   try {
@@ -35,6 +33,7 @@ const securityMiddleware = async (req, res, next) => {
         interval: '1m',
         max: limit,
         name: `${role}-rate-limit`,
+        message,
       })
     );
 
