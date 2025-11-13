@@ -20,7 +20,7 @@ jobs:
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
           IMAGE_NAME_LC="$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')"
           echo "IMAGE_NAME_LC=$IMAGE_NAME_LC" >> "$GITHUB_ENV"
-          echo "IMAGE=docker.io/${{ secrets.DOCKER_USERNAME }}/acquisitions-app >> "$GITHUB_ENV"
+          echo "IMAGE=docker.io/${{ secrets.DOCKER_USERNAME }}/acquisitions-app" >> "$GITHUB_ENV"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -42,7 +42,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=latest
             type=raw,value=prod-{{date 'YYYYMMDD-HHmmss'}}
 
       - name: Build and push Docker image
