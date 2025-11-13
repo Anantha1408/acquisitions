@@ -1,1 +1,6 @@
-{"name":"Test User","email":"test1891221924@example.com","password":"password123","role":"user"}
+{
+  "name": "Test User",
+  "email": "test1891221924@example.com",
+  "password": "password123",
+  "role": "user"
+}

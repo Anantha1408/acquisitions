@@ -5,6 +5,7 @@ This guide explains how to run the Acquisitions application using Docker with Ne
 ## Overview
 
 The application uses different database configurations for development and production:
+
 - **Development**: Uses Neon Local proxy for local development with ephemeral branches
 - **Production**: Connects directly to Neon Cloud database
 
@@ -19,6 +20,7 @@ The application uses different database configurations for development and produ
 ### 1. Get Your Neon Credentials
 
 Visit your [Neon Console](https://console.neon.com) and collect:
+
 - `NEON_API_KEY`: From Account Settings > API Keys
 - `NEON_PROJECT_ID`: From your project dashboard URL
 - `PARENT_BRANCH_ID`: Usually `main` or your default branch ID
@@ -28,6 +30,7 @@ Visit your [Neon Console](https://console.neon.com) and collect:
 Update the environment files with your actual credentials:
 
 #### For Development (`.env.development`):
+
 ```bash
 # Update these values with your actual Neon credentials
 NEON_API_KEY=your_actual_neon_api_key
@@ -37,6 +40,7 @@ ARCJET_KEY=your_arcjet_key
 ```
 
 #### For Production (`.env.production`):
+
 ```bash
 # Update with your production Neon Cloud URL
 DATABASE_URL=postgresql://user:pass@ep-xxxxx.region.aws.neon.tech/dbname?sslmode=require
@@ -48,12 +52,14 @@ ARCJET_KEY=your_arcjet_key
 ### Starting the Development Environment
 
 1. **Load development environment variables**:
+
    ```bash
    # Copy your development environment
    cp .env.development .env
    ```
 
 2. **Start the development stack**:
+
    ```bash
    docker-compose -f docker-compose.dev.yml up --build
    ```
@@ -111,6 +117,7 @@ docker-compose -f docker-compose.dev.yml exec app npm run db:studio
 ### Starting the Production Environment
 
 1. **Load production environment variables**:
+
    ```bash
    # Set your production DATABASE_URL
    export DATABASE_URL="your_production_neon_cloud_url"
@@ -118,15 +125,17 @@ docker-compose -f docker-compose.dev.yml exec app npm run db:studio
    ```
 
 2. **Start the production stack**:
+
    ```bash
    docker-compose -f docker-compose.prod.yml up --build -d
    ```
 
 3. **Verify deployment**:
+
    ```bash
    # Check container health
    docker-compose -f docker-compose.prod.yml ps
-   
+
    # View application logs
    docker-compose -f docker-compose.prod.yml logs app
    ```
@@ -168,34 +177,36 @@ acquisitions/
 
 ## Environment Variables Explained
 
-| Variable | Development | Production | Description |
-|----------|-------------|------------|-------------|
-| `NODE_ENV` | `development` | `production` | Application environment |
-| `DATABASE_URL` | Neon Local proxy | Neon Cloud URL | Database connection string |
-| `LOG_LEVEL` | `debug` | `info` | Logging verbosity |
-| `NEON_API_KEY` | Required | Not used | For Neon Local authentication |
-| `NEON_PROJECT_ID` | Required | Not used | Your Neon project identifier |
-| `PARENT_BRANCH_ID` | Required | Not used | Source branch for ephemeral branches |
+| Variable           | Development      | Production     | Description                          |
+| ------------------ | ---------------- | -------------- | ------------------------------------ |
+| `NODE_ENV`         | `development`    | `production`   | Application environment              |
+| `DATABASE_URL`     | Neon Local proxy | Neon Cloud URL | Database connection string           |
+| `LOG_LEVEL`        | `debug`          | `info`         | Logging verbosity                    |
+| `NEON_API_KEY`     | Required         | Not used       | For Neon Local authentication        |
+| `NEON_PROJECT_ID`  | Required         | Not used       | Your Neon project identifier         |
+| `PARENT_BRANCH_ID` | Required         | Not used       | Source branch for ephemeral branches |
 
 ## Troubleshooting
 
 ### Development Issues
 
 1. **Neon Local won't start**:
+
    ```bash
    # Check if credentials are correct
    docker-compose -f docker-compose.dev.yml logs neon-local
-   
+
    # Restart with fresh containers
    docker-compose -f docker-compose.dev.yml down -v
    docker-compose -f docker-compose.dev.yml up --build
    ```
 
 2. **App can't connect to database**:
+
    ```bash
    # Verify Neon Local is healthy
    docker-compose -f docker-compose.dev.yml ps
-   
+
    # Check database connectivity
    docker-compose -f docker-compose.dev.yml exec app node -e "console.log(process.env.DATABASE_URL)"
    ```
@@ -207,19 +218,21 @@ acquisitions/
 ### Production Issues
 
 1. **Database connection fails**:
+
    ```bash
    # Verify DATABASE_URL is correctly set
    docker-compose -f docker-compose.prod.yml exec app printenv DATABASE_URL
-   
+
    # Test connection manually
    docker-compose -f docker-compose.prod.yml exec app node -e "require('./src/config/database.js')"
    ```
 
 2. **Application won't start**:
+
    ```bash
    # Check application logs
    docker-compose -f docker-compose.prod.yml logs app
-   
+
    # Verify health check
    curl http://localhost:3000/health
    ```

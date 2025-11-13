@@ -1,35 +1,35 @@
 workflows:
-  - name: "Start Development"
-    command: "npm run dev"
-    description: "Start the development server with hot reload"
-    tags: ["dev", "server"]
-    
-  - name: "Lint & Format"
-    command: "npm run lint:fix && npm run format"
-    description: "Fix linting issues and format code"
-    tags: ["code-quality"]
-    
-  - name: "Database Studio"
-    command: "npm run db:studio"
-    description: "Open Drizzle Studio for database management"
-    tags: ["database"]
-    
-  - name: "Generate Migration"
-    command: "npm run db:generate"
-    description: "Generate new database migration"
-    tags: ["database", "migration"]
-    
-  - name: "Run Migration"
-    command: "npm run db:migrate"
-    description: "Apply database migrations"
-    tags: ["database", "migration"]
-    
-  - name: "Check Code Quality"
-    command: "npm run lint && npm run format:check"
-    description: "Check linting and formatting without fixing"
-    tags: ["code-quality", "ci"]
-    
-  - name: "Full Setup"
-    command: "npm install && npm run db:migrate"
-    description: "Install dependencies and setup database"
-    tags: ["setup"]
+  - name: 'Start Development'
+    command: 'npm run dev'
+    description: 'Start the development server with hot reload'
+    tags: ['dev', 'server']
+
+  - name: 'Lint & Format'
+    command: 'npm run lint:fix && npm run format'
+    description: 'Fix linting issues and format code'
+    tags: ['code-quality']
+
+  - name: 'Database Studio'
+    command: 'npm run db:studio'
+    description: 'Open Drizzle Studio for database management'
+    tags: ['database']
+
+  - name: 'Generate Migration'
+    command: 'npm run db:generate'
+    description: 'Generate new database migration'
+    tags: ['database', 'migration']
+
+  - name: 'Run Migration'
+    command: 'npm run db:migrate'
+    description: 'Apply database migrations'
+    tags: ['database', 'migration']
+
+  - name: 'Check Code Quality'
+    command: 'npm run lint && npm run format:check'
+    description: 'Check linting and formatting without fixing'
+    tags: ['code-quality', 'ci']
+
+  - name: 'Full Setup'
+    command: 'npm install && npm run db:migrate'
+    description: 'Install dependencies and setup database'
+    tags: ['setup']

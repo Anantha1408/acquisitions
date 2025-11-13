@@ -1,11 +1,11 @@
-name: "Acquisitions Theme"
-appearance: "dark"
+name: 'Acquisitions Theme'
+appearance: 'dark'
 colors:
-  primary: "#4F8C3B"
-  secondary: "#FFD700"
-  accent: "#FF6B35"
-  background: "#1a1a1a"
-  foreground: "#ffffff"
-  success: "#22c55e"
-  warning: "#f59e0b"
-  error: "#ef4444"
+  primary: '#4F8C3B'
+  secondary: '#FFD700'
+  accent: '#FF6B35'
+  background: '#1a1a1a'
+  foreground: '#ffffff'
+  success: '#22c55e'
+  warning: '#f59e0b'
+  error: '#ef4444'

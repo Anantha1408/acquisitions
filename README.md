@@ -3,6 +3,7 @@
 This project includes JWT-based authentication and role-based access control for user endpoints.
 
 ## Overview
+
 - Sign up (`POST /api/auth/sign-up`) and sign in (`POST /api/auth/sign-in`) issue a JWT stored as an HTTP-only cookie named `token`.
 - Middleware:
   - `authenticateToken`: requires a valid JWT cookie and attaches `req.user` with `{ id, email, role }`.
@@ -10,12 +11,14 @@ This project includes JWT-based authentication and role-based access control for
 - Security middleware (Arcjet) is enabled. For local testing you can bypass it with header `x-bypass-arcjet: 1`.
 
 ## Protected routes
+
 - `GET /api/users` — Admin only (requires `authenticateToken` + `requireRole('admin')`).
 - `GET /api/users/:id` — Any authenticated user.
 - `PUT /api/users/:id` — Any authenticated user; controller restricts updates (self or admin).
 - `DELETE /api/users/:id` — Admin only (requires `authenticateToken` + `requireRole('admin')`).
 
 ## Quick start
+
 1. Install dependencies and start the server.
 2. The API listens on `http://localhost:3000` (see `src/server.js`).
 
@@ -84,11 +87,13 @@ Invoke-WebRequest -Uri "http://localhost:3000/api/users/10" -Method DELETE -Head
 ```
 
 ## Notes
+
 - The JWT secret is configured in `src/utils/jwt.js` via `JWT_SECRET` env var. Use a strong secret in production.
 - Cookies are HTTP-only and secure in production; for local testing, they’re set without the `secure` flag.
 - The Arcjet security middleware enforces bot/shield/rate limits. Use `x-bypass-arcjet: 1` only for local testing.
 
 ## Common error responses
+
 - 401 unauthorized
   - Missing token cookie, invalid/expired token, or not signed in.
 - 403 forbidden
@@ -99,6 +104,7 @@ Invoke-WebRequest -Uri "http://localhost:3000/api/users/10" -Method DELETE -Head
   - Rate limit hit by Arcjet. For local testing, add header `x-bypass-arcjet: 1` to bypass security middleware.
 
 ## Troubleshooting
+
 - After changing middleware/routes, restart the server so changes take effect.
 - Ensure the `token` cookie is present:
   - curl: use `-c cookies.txt` (save) and `-b cookies.txt` (send) flags.

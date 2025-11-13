@@ -10,7 +10,7 @@ services:
     env_file:
       - .env.development
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432"]
+      test: ['CMD-SHELL', 'pg_isready -h localhost -p 5432']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,19 +39,19 @@ services:
       - app-network
     restart: unless-stopped
     stdin_open: true
-    tty:  true
+    tty: true
     healthcheck:
-        test:
-          [
-            'CMD',
-            'node',
-            '-e',
-            "const http = require('http'); const req = http.request({hostname: 'localhost', port: 3000, path: '/health'}, (res) => process.exit(res.statusCode === 200 ? 0 : 1)); req.on('error', () => process.exit(1)); req.end();",
-          ]
-        interval: 30s
-        timeout: 10s
-        retries: 3
-        start_period: 40s
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "const http = require('http'); const req = http.request({hostname: 'localhost', port: 3000, path: '/health'}, (res) => process.exit(res.statusCode === 200 ? 0 : 1)); req.on('error', () => process.exit(1)); req.end();",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 networks:
   app-network:

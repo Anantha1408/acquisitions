@@ -24,7 +24,7 @@ const config = {
   // collectCoverageFrom: undefined,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  coverageDirectory: 'coverage',
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
@@ -32,7 +32,7 @@ const config = {
   // ],
 
   // Indicates which provider should be used to instrument code for coverage
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -147,26 +147,26 @@ const config = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: "node",
+  testEnvironment: 'node',
 
   // Map package.json "imports" aliases for Jest
   moduleNameMapper: {
-    "^#src/(.*)$": "<rootDir>/src/$1",
-    "^#config/(.*)$": "<rootDir>/src/config/$1",
-    "^#controllers/(.*)$": "<rootDir>/src/controllers/$1",
-    "^#middleware/(.*)$": "<rootDir>/src/middleware/$1",
-    "^#models/(.*)$": "<rootDir>/src/models/$1",
-    "^#routes/(.*)$": "<rootDir>/src/routes/$1",
-    "^#services/(.*)$": "<rootDir>/src/services/$1",
-    "^#utils/(.*)$": "<rootDir>/src/utils/$1",
-    "^#validations/(.*)$": "<rootDir>/src/validations/$1"
+    '^#src/(.*)$': '<rootDir>/src/$1',
+    '^#config/(.*)$': '<rootDir>/src/config/$1',
+    '^#controllers/(.*)$': '<rootDir>/src/controllers/$1',
+    '^#middleware/(.*)$': '<rootDir>/src/middleware/$1',
+    '^#models/(.*)$': '<rootDir>/src/models/$1',
+    '^#routes/(.*)$': '<rootDir>/src/routes/$1',
+    '^#services/(.*)$': '<rootDir>/src/services/$1',
+    '^#utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^#validations/(.*)$': '<rootDir>/src/validations/$1',
   },
 
   // Match tests in the "tests" folder, including files named with ".tests.js"
   testMatch: [
-    "<rootDir>/tests/**/*.tests.?([mc])js",
-    "<rootDir>/tests/**/*.test.?([mc])js",
-    "<rootDir>/**/__tests__/**/*.?([mc])[jt]s?(x)"
+    '<rootDir>/tests/**/*.tests.?([mc])js',
+    '<rootDir>/tests/**/*.test.?([mc])js',
+    '<rootDir>/**/__tests__/**/*.?([mc])[jt]s?(x)',
   ],
 
   // Options that will be passed to the testEnvironment
