@@ -2,7 +2,6 @@ import aj from '#config/arcjet.js';
 import { slidingWindow } from '@arcjet/node';
 import logger from '#config/logger.js';
 
-
 const securityMiddleware = async (req, res, next) => {
   try {
     // Dev-only bypass to allow local testing (cookies, auth, etc.)
@@ -44,12 +43,10 @@ const securityMiddleware = async (req, res, next) => {
         userAgent: req.get('User-Agent'),
         path: req.path,
       });
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'Automated requests are not allowed',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Automated requests are not allowed',
+      });
     }
     if (decision.isDenied() && decision.reason.isShield()) {
       logger.warn('Shield request blocked', {
@@ -58,12 +55,10 @@ const securityMiddleware = async (req, res, next) => {
         path: req.path,
         method: req.method,
       });
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'Request blocked by security policy',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Request blocked by security policy',
+      });
     }
 
     if (decision.isDenied() && decision.reason.isRateLimit()) {
@@ -72,12 +67,10 @@ const securityMiddleware = async (req, res, next) => {
         userAgent: req.get('User-Agent'),
         path: req.path,
       });
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'too many requests are not allowed',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'too many requests are not allowed',
+      });
     }
     next();
   } catch (e) {
